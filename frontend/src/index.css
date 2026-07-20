@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg: #0B0B14;
+  --surface: #12121C;
+  --surface-2: #181826;
+  --tag-bg: #1E1E2E;
+  --border: #232336;
+  --text-primary: #F5F5FA;
+  --text-secondary: #9494A8;
+  --text-muted: #6B6B80;
+  --gradient: linear-gradient(135deg, #A855F7, #06B6D4);
+  --accent-purple: #A855F7;
+  --accent-cyan: #06B6D4;
+  --accent-green: #34D399;
+  --nav-link: #D0D0DC;
+}
+
+.light {
+  --bg: #FAFAFB;
+  --surface: #FFFFFF;
+  --surface-2: #F4F4F7;
+  --tag-bg: #EEEEF3;
+  --border: #E3E3EA;
+  --text-primary: #0B0B14;
+  --text-secondary: #5B5B6B;
+  --text-muted: #8A8A9A;
+  --gradient: linear-gradient(135deg, #9333EA, #0891B2);
+  --accent-purple: #9333EA;
+  --accent-cyan: #0891B2;
+  --accent-green: #059669;
+  --nav-link: #4B4B5B;
+}
+
+* { border-color: var(--border); }
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+.text-gradient {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.bg-gradient { background: var(--gradient); }
