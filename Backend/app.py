@@ -22,6 +22,9 @@ def create_app():
     app.register_blueprint(jobs_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
+    with app.app_context():
+        db.create_all()
+
     @app.route("/api/health")
     def health():
         return {"status": "ok", "message": "DataHive backend is running"}
@@ -48,8 +51,6 @@ def run_scraper_job():
 
 if __name__ == "__main__":
     app = create_app()
-    with app.app_context():
-        db.create_all()
 
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         scheduler = BackgroundScheduler()
