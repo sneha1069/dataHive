@@ -16,7 +16,7 @@ export const ALL_JOBS = [
 export const ROLES = ['All Roles', 'Data Analyst', 'Data Engineer', 'Data Scientist', 'BI Developer', 'SQL Developer', 'Analytics Engineer']
 export const LOCATIONS = ['All Locations', 'Delhi NCR', 'Noida', 'Gurugram', 'Bengaluru', 'Hyderabad', 'Pune', 'Chennai']
 export const MODES = ['All Modes', 'Onsite', 'Hybrid', 'Remote']
-
+export const SOURCES = ['All Sources', 'Naukri', 'Indeed', 'Internshala', 'Jobsora', 'Hirist', 'JobHai']
 export const COMPANIES_LIST = [
   { name: 'Google', initial: 'G', grad: 'linear-gradient(135deg,#4285F4,#34A853)', industry: 'Technology', hq: 'Bengaluru' },
   { name: 'Amazon', initial: 'A', grad: 'linear-gradient(135deg,#FF9900,#FF6B00)', industry: 'E-commerce', hq: 'Hyderabad' },

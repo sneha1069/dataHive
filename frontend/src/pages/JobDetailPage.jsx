@@ -93,47 +93,74 @@ export default function JobDetailPage() {
             <a
               href={job.applyLink ? job.applyLink : '#'}
               target="_blank"
-              rel="noreferrer"
-              className="rounded-full px-5 py-3 text-[15px] font-semibold"
-              style={{ background: job.topbar, color: '#fff' }}
+              rel="noopener noreferrer"
+              className="px-6 py-3 rounded-xl font-semibold text-[14.5px] bg-gradient hover:opacity-90 transition-opacity whitespace-nowrap"
             >
-              Apply
+              Apply Now
             </a>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl p-6 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.07)]">
-              <p className="text-[13px] uppercase tracking-[0.3em] mb-4" style={{ color: 'var(--text-secondary)' }}>Job details</p>
-              <p className="text-[15px] mb-3"><strong>Location:</strong> {locationLabel}</p>
-              <p className="text-[15px] mb-3"><strong>Salary:</strong> {salaryLabel}</p>
-              <p className="text-[15px]"><strong>Experience:</strong> {job.experience}</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-7">
+            <div className="rounded-xl p-3.5" style={{ background: 'var(--surface-2)' }}>
+              <div className="text-[11.5px] mb-1" style={{ color: 'var(--text-muted)' }}>Location</div>
+              <div className="text-[13.5px] font-semibold">{locationLabel}</div>
             </div>
-            <div className="rounded-2xl p-6 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.07)]">
-              <p className="text-[13px] uppercase tracking-[0.3em] mb-4" style={{ color: 'var(--text-secondary)' }}>About the role</p>
-              <p className="text-[15px]">{aboutText}</p>
+            <div className="rounded-xl p-3.5" style={{ background: 'var(--surface-2)' }}>
+              <div className="text-[11.5px] mb-1" style={{ color: 'var(--text-muted)' }}>Salary</div>
+              <div className="text-[13.5px] font-semibold">{salaryLabel}</div>
             </div>
+            <div className="rounded-xl p-3.5" style={{ background: 'var(--surface-2)' }}>
+              <div className="text-[11.5px] mb-1" style={{ color: 'var(--text-muted)' }}>Experience</div>
+              <div className="text-[13.5px] font-semibold">{job.experience}</div>
+            </div>
+            <div className="rounded-xl p-3.5" style={{ background: 'var(--surface-2)' }}>
+              <div className="text-[11.5px] mb-1" style={{ color: 'var(--text-muted)' }}>Source</div>
+              <div className="text-[13.5px] font-semibold">{job.source}</div>
+            </div>
+          </div>
+
+          {job.skills.length > 0 && (
+            <div className="mb-7">
+              <div className="font-semibold text-[15px] mb-3">Skills required</div>
+              <div className="flex flex-wrap gap-2">
+                {job.skills.map(function (s) {
+                  return (
+                    <span key={s} className="px-3.5 py-2 rounded-full text-[13px]" style={{ background: 'var(--tag-bg)', color: 'var(--nav-link)' }}>
+                      {s}
+                    </span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <div className="font-semibold text-[15px] mb-3">About this role</div>
+            <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              {aboutText}
+            </p>
           </div>
         </div>
       </div>
 
       {similar.length > 0 && (
-        <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <div className="p-7">
-            <h2 className="font-extrabold text-[20px] mb-5">Similar jobs</h2>
-            <div className="grid gap-4">
-              {similar.map(function (jobItem) {
-                return (
-                  <Link
-                    key={jobItem.id}
-                    to={`/jobs/${jobItem.id}`}
-                    className="rounded-2xl p-5 border border-[rgba(255,255,255,0.08)] hover:border-[var(--accent-purple)] transition"
-                    style={{ background: 'var(--surface)' }}
-                  >
-                    <p className="font-semibold">{jobItem.title}</p>
-                    <p className="text-[14px]" style={{ color: 'var(--text-secondary)' }}>{jobItem.company}</p>
-                  </Link>
-                )
-              })}
-            </div>
+        <div>
+          <div className="font-bold text-[19px] mb-4">Similar roles</div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {similar.map(function (j) {
+              return (
+                <Link
+                  key={j.id}
+                  to={'/jobs/' + j.id}
+                  className="rounded-xl p-4 block hover:opacity-90 transition-opacity"
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                >
+                  <div className="font-semibold text-[14px] mb-1">{j.title}</div>
+                  <div className="text-[12.5px] mb-2" style={{ color: 'var(--text-secondary)' }}>{j.company}</div>
+                  <div className="text-[13px] font-semibold" style={{ color: 'var(--accent-green)' }}>Rs {j.salary}</div>
+                </Link>
+              )
+            })}
           </div>
         </div>
       )}

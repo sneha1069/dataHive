@@ -88,12 +88,27 @@ def parse_salary(salary_text):
         return None, None
 
 
+def extract_pubdates(html):
+    """Indeed's page JSON has 'jobkey' before 'pubDate' for each job (alphabetical key order).
+    Match each jobkey to its own pubDate using non-greedy regex."""
+    pairs = re.findall(r'"jobkey":"([a-zA-Z0-9]+)".*?"pubDate":(\d+)', html, re.DOTALL)
+    result = {}
+    for jobkey, pubdate_ms in pairs:
+        if jobkey not in result:
+            result[jobkey] = int(pubdate_ms)
+    return result
+
+
+def epoch_ms_to_datetime(epoch_ms):
+    return datetime.fromtimestamp(epoch_ms / 1000, tz=timezone.utc)
+
+
 def scrape_indeed(search_query="data+analyst", max_jobs=20):
     jobs = []
     url = f"https://in.indeed.com/jobs?q={search_query}"
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
@@ -109,6 +124,10 @@ def scrape_indeed(search_query="data+analyst", max_jobs=20):
 
         page.wait_for_timeout(3000)
 
+        full_html = page.content()
+        pubdates_map = extract_pubdates(full_html)
+        print(f"Found {len(pubdates_map)} pubDate entries in page JSON")
+
         cards = page.query_selector_all("div.job_seen_beacon")
         print(f"Found {len(cards)} job cards")
 
@@ -119,6 +138,7 @@ def scrape_indeed(search_query="data+analyst", max_jobs=20):
                 company_el = card.query_selector('span[data-testid="company-name"]')
                 location_el = card.query_selector('div[data-testid="text-location"]')
                 salary_el = card.query_selector("li.salary-snippet-container span")
+                jobkey = title_link_el.get_attribute("data-jk") if title_link_el else None
 
                 title = title_span_el.inner_text().strip() if title_span_el else None
                 relative_link = title_link_el.get_attribute("href") if title_link_el else None
@@ -131,6 +151,11 @@ def scrape_indeed(search_query="data+analyst", max_jobs=20):
                     continue
 
                 salary_min, salary_max = parse_salary(salary_text)
+
+                if jobkey and jobkey in pubdates_map:
+                    posted_date = epoch_ms_to_datetime(pubdates_map[jobkey])
+                else:
+                    posted_date = datetime.now(timezone.utc)
 
                 jobs.append({
                     "title": title,
@@ -145,7 +170,7 @@ def scrape_indeed(search_query="data+analyst", max_jobs=20):
                     "skills": "",
                     "source": "Indeed",
                     "apply_link": apply_link,
-                    "posted_date": datetime.now(timezone.utc),
+                    "posted_date": posted_date,
                     "scraped_at": datetime.now(timezone.utc),
                 })
             except Exception as e:

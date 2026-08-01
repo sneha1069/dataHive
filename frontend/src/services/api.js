@@ -10,12 +10,14 @@ async function handleResponse(response) {
   return response.json();
 }
 
-export async function fetchJobs({ role, location, mode, minSalary, search, company, page = 1, perPage = 6 } = {}) {
+export async function fetchJobs({ role, location, mode, source, minSalary, datePosted, search, company, page = 1, perPage = 6 } = {}) {
   const params = new URLSearchParams();
 
   if (role && role !== "All Roles") params.append("role", role);
   if (location && location !== "All Locations") params.append("location", location);
   if (mode && mode !== "All Modes") params.append("mode", mode);
+  if (source && source !== "All Sources") params.append("source", source);
+  if (datePosted && datePosted !== "any") params.append("datePosted", datePosted);
   if (minSalary) params.append("minSalary", minSalary);
   if (search) params.append("search", search);
   if (company) params.append("company", company);

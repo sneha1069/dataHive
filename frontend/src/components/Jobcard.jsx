@@ -45,6 +45,16 @@ export default function JobCard({ job }) {
             <div className="text-[11.5px] mb-2" style={{ color: 'var(--text-secondary)' }}>🕐 {job.experience}</div>
           )}
 
+          <div className="flex items-center justify-between text-[10.5px] mb-2" style={{ color: 'var(--text-secondary)' }}>
+            <span>{job.posted}</span>
+            <span
+              className="px-2 py-0.5 rounded-full font-medium"
+              style={{ background: 'var(--tag-bg)', color: 'var(--text-primary)' }}
+            >
+              {job.source}
+            </span>
+          </div>
+
           {job.skills.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-2.5">
               {job.skills.slice(0, 3).map((s) => (

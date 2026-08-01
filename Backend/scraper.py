@@ -1,6 +1,7 @@
 import time
+import re
 from playwright.sync_api import sync_playwright
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from app import create_app
 from models import db, Job
 
@@ -66,12 +67,41 @@ def clean_location(location_text):
     return cleaned if cleaned else "India"
 
 
+def parse_relative_date(text):
+    """Naukri shows text like '1 Day Ago', '3 Days Ago', '1 Week Ago', 'Today', '2 Months Ago' etc."""
+    if not text:
+        return datetime.now(timezone.utc)
+
+    text_lower = text.lower().strip()
+
+    if "today" in text_lower or "just now" in text_lower:
+        return datetime.now(timezone.utc)
+
+    match = re.search(r"(\d+)\s*(day|week|month|hour|min)", text_lower)
+    if not match:
+        return datetime.now(timezone.utc)
+
+    number = int(match.group(1))
+    unit = match.group(2)
+
+    if unit in ("hour", "min"):
+        return datetime.now(timezone.utc)
+    if unit == "day":
+        return datetime.now(timezone.utc) - timedelta(days=number)
+    if unit == "week":
+        return datetime.now(timezone.utc) - timedelta(weeks=number)
+    if unit == "month":
+        return datetime.now(timezone.utc) - timedelta(days=number * 30)
+
+    return datetime.now(timezone.utc)
+
+
 def scrape_naukri(search_query="data-analyst", max_jobs=20):
     jobs = []
     url = f"https://www.naukri.com/{search_query}-jobs"
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
@@ -97,12 +127,14 @@ def scrape_naukri(search_query="data-analyst", max_jobs=20):
                 company_el = card.query_selector("a.comp-name")
                 exp_el = card.query_selector("span.exp-wrap")
                 loc_el = card.query_selector("span.loc-wrap")
+                posted_el = card.query_selector("span.job-post-day")
 
                 title = title_el.inner_text().strip() if title_el else None
                 apply_link = title_el.get_attribute("href") if title_el else None
                 company = company_el.inner_text().strip() if company_el else None
                 experience_text = exp_el.inner_text().strip() if exp_el else None
                 location = loc_el.inner_text().strip() if loc_el else None
+                posted_text = posted_el.inner_text().strip() if posted_el else None
 
                 if not title or not company:
                     continue
@@ -122,7 +154,7 @@ def scrape_naukri(search_query="data-analyst", max_jobs=20):
                     "skills": "",
                     "source": "Naukri",
                     "apply_link": apply_link,
-                    "posted_date": datetime.now(timezone.utc),
+                    "posted_date": parse_relative_date(posted_text),
                     "scraped_at": datetime.now(timezone.utc),
                 })
             except Exception as e:

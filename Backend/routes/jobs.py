@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from datetime import datetime, timezone, timedelta
 from models import db, Job
 
 jobs_bp = Blueprint("jobs", __name__)
@@ -24,6 +25,15 @@ def get_jobs():
     mode = request.args.get("mode")
     if mode and mode != "All Modes":
         query = query.filter(Job.mode == mode)
+
+    source = request.args.get("source")
+    if source and source != "All Sources":
+        query = query.filter(Job.source == source)
+
+    date_posted = request.args.get("datePosted", type=int)
+    if date_posted:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=date_posted)
+        query = query.filter(Job.posted_date >= cutoff)
 
     min_salary = request.args.get("minSalary", type=int)
     if min_salary is not None:

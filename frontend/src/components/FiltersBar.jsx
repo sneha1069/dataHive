@@ -28,6 +28,14 @@ function Dropdown({ label, options, value, onChange }) {
 
 const SALARY_OPTIONS = [0, 2, 4, 6, 8, 10, 15, 20, 25, 30]
 
+const DATE_POSTED_OPTIONS = [
+  { label: 'Any Time', value: 'any' },
+  { label: 'Last 24 Hours', value: '1' },
+  { label: 'Last 3 Days', value: '3' },
+  { label: 'Last Week', value: '7' },
+  { label: 'Last Month', value: '30' },
+]
+
 export default function FiltersBar({ filters, setFilters }) {
   const update = (key, value) => setFilters((f) => ({ ...f, [key]: value }))
 
@@ -38,6 +46,7 @@ export default function FiltersBar({ filters, setFilters }) {
       mode: 'All Modes',
       source: 'All Sources',
       minSalary: 0,
+      datePosted: 'any',
     })
 
   return (
@@ -49,6 +58,22 @@ export default function FiltersBar({ filters, setFilters }) {
       <Dropdown label="Location" options={LOCATIONS} value={filters.location} onChange={(v) => update('location', v)} />
       <Dropdown label="Work Mode" options={MODES} value={filters.mode} onChange={(v) => update('mode', v)} />
       <Dropdown label="Source" options={SOURCES} value={filters.source} onChange={(v) => update('source', v)} />
+
+      <div className="flex flex-col gap-1.5 min-w-[150px] flex-1">
+        <label className="text-[12px] font-semibold" style={{ color: 'var(--text-secondary)' }}>
+          Date Posted
+        </label>
+        <select
+          value={filters.datePosted}
+          onChange={(e) => update('datePosted', e.target.value)}
+          className="rounded-lg px-3 py-2.5 text-[13.5px] outline-none cursor-pointer"
+          style={selectStyle}
+        >
+          {DATE_POSTED_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
 
       <div className="flex flex-col gap-1.5 min-w-[150px] flex-1">
         <label className="text-[12px] font-semibold" style={{ color: 'var(--text-secondary)' }}>
