@@ -14,8 +14,12 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app, origins=re.compile(r"^http://(localhost|127\.0\.0\.1):\d+$"))
-
+    CORS(app, origins=[
+    "https://data-hive-iota.vercel.app",
+    "https://data-hive-git-main-sneha1070.vercel.app",
+    re.compile(r"^https://data-hive-.*\.vercel\.app$"),
+    re.compile(r"^http://(localhost|127\.0\.0\.1):\d+$"),
+])
     db.init_app(app)
     JWTManager(app)
 
