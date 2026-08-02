@@ -87,7 +87,7 @@ def get_companies():
     )
     companies = [{"name": name, "roles": count} for name, count in results]
     return jsonify({"companies": companies})
-@jobs_bp.route("/admin/trigger-scrape", methods=["POST"])
+@jobs_bp.route("/admin/trigger-scrape", methods=["GET"])
 def trigger_scrape():
     from scraper import run_full_scrape
     from scraper_indeed import run_full_indeed_scrape
